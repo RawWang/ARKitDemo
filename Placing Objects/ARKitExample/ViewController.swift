@@ -16,8 +16,8 @@ class ViewController: UIViewController {
     var screenCenter: CGPoint?
 
     let session = ARSession()
-    lazy var standardConfiguration: ARWorldTrackingSessionConfiguration = {
-        let configuration = ARWorldTrackingSessionConfiguration()
+    lazy var standardConfiguration: ARWorldTrackingConfiguration = {
+        let configuration = ARWorldTrackingConfiguration()
         configuration.planeDetection = .horizontal
         return configuration
     }()
@@ -73,14 +73,11 @@ class ViewController: UIViewController {
 		// Prevent the screen from being dimmed after a while.
 		UIApplication.shared.isIdleTimerDisabled = true
 		
-        if ARWorldTrackingSessionConfiguration.isSupported {
+        if ARWorldTrackingConfiguration.isSupported {
 			// Start the ARSession.
-			resetTracking()
+            resetTracking()
 		} else {
-			// This device does not support 6DOF world tracking.
-			let sessionErrorMsg = "This app requires world tracking. World tracking is only available on iOS devices with A9 processor or newer. " +
-			"Please quit the application."
-			displayErrorMessage(title: "Unsupported platform", message: sessionErrorMsg, allowRestart: false)
+			displayErrorMessage(title: "该设备不支持", message: "", allowRestart: false)
 		}
 	}
 	
@@ -100,7 +97,9 @@ class ViewController: UIViewController {
 		sceneView.setup()
 		sceneView.delegate = self
 		sceneView.session = session
-		// sceneView.showsStatistics = true
+        sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
+
+//         sceneView.showsStatistics = true
 		
 		sceneView.scene.enableEnvironmentMapWithIntensity(25, queue: serialQueue)
 		
@@ -123,32 +122,32 @@ class ViewController: UIViewController {
 	
     // MARK: - Gesture Recognizers
 	
-	override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-		virtualObjectManager.reactToTouchesBegan(touches, with: event, in: self.sceneView)
-	}
-	
-	override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-		virtualObjectManager.reactToTouchesMoved(touches, with: event)
-	}
-	
-	override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-		if virtualObjectManager.virtualObjects.isEmpty {
-			chooseObject(addObjectButton)
-			return
-		}
-		virtualObjectManager.reactToTouchesEnded(touches, with: event)
-	}
-	
-	override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-		virtualObjectManager.reactToTouchesCancelled(touches, with: event)
-	}
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        virtualObjectManager.reactToTouchesBegan(touches, with: event, in: self.sceneView)
+    }
+
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        virtualObjectManager.reactToTouchesMoved(touches, with: event)
+    }
+
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if virtualObjectManager.virtualObjects.isEmpty {
+            chooseObject(addObjectButton)
+            return
+        }
+        virtualObjectManager.reactToTouchesEnded(touches, with: event)
+    }
+
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        virtualObjectManager.reactToTouchesCancelled(touches, with: event)
+    }
 	
     // MARK: - Planes
 	
 	var planes = [ARPlaneAnchor: Plane]()
 	
+    //检测到平面，并添加到rootNode上
     func addPlane(node: SCNNode, anchor: ARPlaneAnchor) {
-        
 		let plane = Plane(anchor)
 		planes[anchor] = plane
 		node.addChildNode(plane)
@@ -192,7 +191,7 @@ class ViewController: UIViewController {
 			self.sceneView.scene.rootNode.addChildNode(self.focusSquare!)
 		}
 		
-		textManager.scheduleMessage("TRY MOVING LEFT OR RIGHT", inSeconds: 5.0, messageType: .focusSquare)
+//        textManager.scheduleMessage("TRY MOVING LEFT OR RIGHT", inSeconds: 5.0, messageType: .focusSquare)
     }
 	
 	func updateFocusSquare() {

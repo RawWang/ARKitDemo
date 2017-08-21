@@ -183,14 +183,14 @@ class VirtualObjectManager {
 	private func setNewVirtualObjectPosition(_ object: VirtualObject, to pos: float3, cameraTransform: matrix_float4x4) {
 		let cameraWorldPos = cameraTransform.translation
 		var cameraToPosition = pos - cameraWorldPos
-		
 		// Limit the distance of the object from the camera to a maximum of 10 meters.
         if simd_length(cameraToPosition) > 10 {
             cameraToPosition = simd_normalize(cameraToPosition)
             cameraToPosition *= 10
         }
-
-		object.simdPosition = cameraWorldPos + cameraToPosition
+        
+        object.rotation = SCNVector4Make(0, 0, -1, 0)
+        object.simdPosition = cameraWorldPos + cameraToPosition
 		object.recentVirtualObjectDistances.removeAll()
 	}
 	
@@ -224,6 +224,7 @@ class VirtualObjectManager {
 	
 	func checkIfObjectShouldMoveOntoPlane(anchor: ARPlaneAnchor, planeAnchorNode: SCNNode) {
 		for object in virtualObjects {
+            
 			// Get the object's position in the plane's coordinate system.
 			let objectPos = planeAnchorNode.convertPosition(object.position, from: object.parent)
 			
@@ -259,19 +260,19 @@ class VirtualObjectManager {
 		}
 	}
 	
-	func transform(for object: VirtualObject, cameraTransform: matrix_float4x4) -> (distance: Float, rotation: Int, scale: Float) {
-		let cameraPos = cameraTransform.translation
-		let vectorToCamera = cameraPos - object.simdPosition
-		
-		let distanceToUser = simd_length(vectorToCamera)
-		
-		var angleDegrees = Int((object.eulerAngles.y * 180) / .pi) % 360
-		if angleDegrees < 0 {
-			angleDegrees += 360
-		}
-		
-		return (distanceToUser, angleDegrees, object.scale.x)
-	}
+    func transform(for object: VirtualObject, cameraTransform: matrix_float4x4) -> (distance: Float, rotation: Int, scale: Float) {
+        let cameraPos = cameraTransform.translation
+        let vectorToCamera = cameraPos - object.simdPosition
+
+        let distanceToUser = simd_length(vectorToCamera)
+
+        var angleDegrees = Int((object.eulerAngles.y * 180) / .pi) % 360
+        if angleDegrees < 0 {
+            angleDegrees += 360
+        }
+
+        return (distanceToUser, angleDegrees, object.scale.x)
+    }
 	
 	func worldPositionFromScreenPosition(_ position: CGPoint,
 	                                     in sceneView: ARSCNView,

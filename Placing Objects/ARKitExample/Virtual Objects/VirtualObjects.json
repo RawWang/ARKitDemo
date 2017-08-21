@@ -26,7 +26,22 @@
     },
      {
      "modelName": "tv",
-     "displayName": "TV",
+     "displayName": "电视",
+     "particleScaleInfo": { }
+     },
+     {
+     "modelName": "washing",
+     "displayName": "洗衣机",
+     "particleScaleInfo": { }
+     },
+     {
+     "modelName": "airbox",
+     "displayName": "空调",
+     "particleScaleInfo": { }
+     },
+     {
+     "modelName": "refrigerator",
+     "displayName": "冰箱",
      "particleScaleInfo": { }
      },
 ]

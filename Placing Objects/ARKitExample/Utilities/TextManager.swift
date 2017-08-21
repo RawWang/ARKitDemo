@@ -30,8 +30,8 @@ extension ARCamera.TrackingState {
                 return ""
             case .initializing:
                 return "开始初始化..."
-            case .none:
-                return "none"
+//            case .none:
+//                return "none"
             }
         }
     }
