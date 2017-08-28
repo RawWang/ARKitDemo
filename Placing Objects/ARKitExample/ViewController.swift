@@ -97,7 +97,7 @@ class ViewController: UIViewController {
 		sceneView.setup()
 		sceneView.delegate = self
 		sceneView.session = session
-        sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
+        sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints, ARSCNDebugOptions.showWorldOrigin]
 
 //         sceneView.showsStatistics = true
 		
@@ -148,15 +148,15 @@ class ViewController: UIViewController {
 	
     //检测到平面，并添加到rootNode上
     func addPlane(node: SCNNode, anchor: ARPlaneAnchor) {
-		let plane = Plane(anchor)
-		planes[anchor] = plane
-		node.addChildNode(plane)
-		
-		textManager.cancelScheduledMessage(forType: .planeEstimation)
-		textManager.showMessage("检测到平面")
-		if virtualObjectManager.virtualObjects.isEmpty {
-			textManager.scheduleMessage("点击+放置物体", inSeconds: 7.5, messageType: .contentPlacement)
-		}
+        let plane = Plane(anchor)
+        planes[anchor] = plane
+        node.addChildNode(plane)
+//
+//        textManager.cancelScheduledMessage(forType: .planeEstimation)
+//        textManager.showMessage("检测到平面")
+//        if virtualObjectManager.virtualObjects.isEmpty {
+//            textManager.scheduleMessage("点击+放置物体", inSeconds: 7.5, messageType: .contentPlacement)
+//        }
 	}
 		
     func updatePlane(anchor: ARPlaneAnchor) {
@@ -182,6 +182,7 @@ class ViewController: UIViewController {
     // MARK: - Focus Square
     
     var focusSquare: FocusSquare?
+//    var gridSquare: GridPlane;
 	
     func setupFocusSquare() {
 		serialQueue.async {
