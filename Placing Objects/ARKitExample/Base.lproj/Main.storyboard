@@ -118,6 +118,13 @@
                                 </constraints>
                                 <blurEffect style="light"/>
                             </visualEffectView>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ecX-7C-G7n">
+                                <rect key="frame" x="312" y="613" width="49" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <connections>
+                                    <action selector="touchSwitchChange:" destination="BV1-FR-VrT" eventType="valueChanged" id="oCA-kf-Fkf"/>
+                                </connections>
+                            </switch>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -146,6 +153,7 @@
                         <outlet property="restartExperienceButton" destination="BgI-fb-Vqi" id="Yfh-W4-qlO"/>
                         <outlet property="sceneView" destination="E6c-py-dvH" id="Gr4-Uw-Z4A"/>
                         <outlet property="settingsButton" destination="j8v-6q-UBb" id="wZV-ib-D05"/>
+                        <outlet property="touchSwitch" destination="ecX-7C-G7n" id="VlG-8d-VzY"/>
                         <segue destination="mYv-Qg-jWH" kind="popoverPresentation" identifier="showObjects" popoverAnchorView="xcf-ic-uGo" id="WP3-Hd-cnB">
                             <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
                         </segue>

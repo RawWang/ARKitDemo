@@ -53,6 +53,9 @@ class ViewController: UIViewController {
     @IBOutlet weak var addObjectButton: UIButton!
     @IBOutlet weak var restartExperienceButton: UIButton!
     
+    @IBOutlet weak var touchSwitch: UISwitch!
+    
+    private var isSupportTouches:Bool = true
     // MARK: - Queues
     
 	let serialQueue = DispatchQueue(label: "com.apple.arkitexample.serialSceneKitQueue")
@@ -120,17 +123,31 @@ class ViewController: UIViewController {
         messageLabel.text = ""
     }
 	
+    @IBAction func touchSwitchChange(_ sender: Any) {
+        if let switcher = sender as? UISwitch{
+            isSupportTouches = switcher.isOn
+        }
+    }
     // MARK: - Gesture Recognizers
 	
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if !isSupportTouches{
+            return;
+        }
         virtualObjectManager.reactToTouchesBegan(touches, with: event, in: self.sceneView)
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if !isSupportTouches{
+            return;
+        }
         virtualObjectManager.reactToTouchesMoved(touches, with: event)
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if !isSupportTouches{
+            return;
+        }
         if virtualObjectManager.virtualObjects.isEmpty {
             chooseObject(addObjectButton)
             return
@@ -139,6 +156,9 @@ class ViewController: UIViewController {
     }
 
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if !isSupportTouches{
+            return;
+        }
         virtualObjectManager.reactToTouchesCancelled(touches, with: event)
     }
 	
@@ -182,7 +202,7 @@ class ViewController: UIViewController {
     // MARK: - Focus Square
     
     var focusSquare: FocusSquare?
-//    var gridSquare: GridPlane;
+//    var gridSquare: GridPlane?
 	
     func setupFocusSquare() {
 		serialQueue.async {

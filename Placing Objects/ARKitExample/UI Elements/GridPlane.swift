@@ -9,7 +9,7 @@
 import ARKit
 
 class GridPlane: SCNNode {
-    var anchor: ARPlaneAnchor!
+//    var anchor: ARPlaneAnchor!
     var planeGeometry: SCNPlane!
     
     var lastPositionOnPlane: float3?
@@ -19,8 +19,10 @@ class GridPlane: SCNNode {
     private var recentGridPositions: [float3] = []
     private var anchorsOfVisitedPlanes: Set<ARAnchor> = []
     
+    private var isOpen = false
+    
     private lazy var focusSquareNode: SCNNode = {
-        planeGeometry = SCNPlane.init(width: 1, height: 1)
+        planeGeometry = SCNPlane.init(width: 0, height: 0)
         
         //贴图
         let material = SCNMaterial()
@@ -45,29 +47,6 @@ class GridPlane: SCNNode {
         self.addChildNode(focusSquareNode)
     }
     
-    init(withAnchor anchor: ARPlaneAnchor){
-        super.init()
-        
-        self.anchor = anchor
-        planeGeometry = SCNPlane.init(width: CGFloat(anchor.extent.x), height: CGFloat(anchor.extent.z))
-        
-        //贴图
-        let material = SCNMaterial()
-        let img = UIImage.init(named: "grid")
-        material.diffuse.contents = img
-        material.lightingModel = .physicallyBased
-        planeGeometry.materials = [material]
-        
-        let planeNode = SCNNode.init(geometry: planeGeometry)
-        planeNode.position = SCNVector3Make(anchor.center.x, 0, anchor.center.z)
-        
-        //SceneKit 里的Plane默认为垂直，所以需要翻转90度
-        planeNode.transform = SCNMatrix4MakeRotation(Float(-.pi / 2.0), 1.0, 0.0, 0.0)
-        
-        setTextureScale()
-        addChildNode(planeNode)
-    }
-    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -86,20 +65,23 @@ class GridPlane: SCNNode {
         }
     }
     
-    func update(for position: float3, planeAnchor: ARPlaneAnchor, camera: ARCamera?) {
+    func update(for position: float3, planeAnchor: ARPlaneAnchor?, camera: ARCamera?) {
         lastPosition = position
-        planeGeometry.width = CGFloat(anchor.extent.x)
-        planeGeometry.height = CGFloat(anchor.extent.z)
-//        position = SCNVector3Make(anchor.center.x, 0, anchor.center.z)
-        setTextureScale()
-        
-        lastPositionOnPlane = position
-        anchorsOfVisitedPlanes.insert(planeAnchor)
-//        if let anchor = planeAnchor {
-//
-//        } else {
-//        }
-        updateTransform(for: position, camera: camera)
+
+        if let anchor = planeAnchor {
+            lastPositionOnPlane = position
+            anchorsOfVisitedPlanes.insert(anchor)
+            
+            close(flash: !anchorsOfVisitedPlanes.contains(anchor))
+
+            planeGeometry.width = CGFloat(anchor.extent.x)
+            planeGeometry.height = CGFloat(anchor.extent.z)
+            self.position = SCNVector3Make(anchor.center.x, 0, anchor.center.z)
+            setTextureScale()
+        } else {
+            open()
+        }
+//        updateTransform(for: position, camera: camera)
     }
     
     private func updateTransform(for position: float3, camera: ARCamera?) {
@@ -161,9 +143,28 @@ class GridPlane: SCNNode {
         return normalized
     }
     
+    private func stopPulsing(for node: SCNNode?) {
+        node?.removeAction(forKey: "pulse")
+        node?.opacity = 1.0
+    }
     
-    func update(anchor: ARPlaneAnchor) {
+    private func close(flash: Bool = false) {
+        if !isOpen {
+            return
+        }
 
+        stopPulsing(for: focusSquareNode)
+        focusSquareNode.opacity = 0.99
+
+        isOpen = false
+    }
+    
+    private func open() {
+        if isOpen {
+            return
+        }
+        focusSquareNode.opacity = 1.0
+        isOpen = true
     }
     
     func setTextureScale() {
