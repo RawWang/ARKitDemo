@@ -180,6 +180,11 @@ class ViewController: UIViewController {
 	}
 		
     func updatePlane(anchor: ARPlaneAnchor) {
+        
+        if self.virtualObjectManager.virtualObjects.count > 0{
+            return
+        }
+        
         if let plane = planes[anchor] {
 			plane.update(anchor)
 		}
@@ -216,6 +221,11 @@ class ViewController: UIViewController {
     }
 	
 	func updateFocusSquare() {
+        
+        if self.virtualObjectManager.virtualObjects.count > 0{
+            return
+        }
+        
 		guard let screenCenter = screenCenter else { return }
 		
 		DispatchQueue.main.async {
